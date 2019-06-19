@@ -19,3 +19,5 @@ socket.on('file-save', fileSave);
 
 // Listen for file-error event
 socket.on('file-error', fileError);
+
+module.exports = exports = {fileSave, fileError};
