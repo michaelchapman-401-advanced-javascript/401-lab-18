@@ -9,21 +9,29 @@ const io = require('socket.io-client');
 const socket = io.connect('http://localhost:3001');
 
 const alterFile = (file) => {
-  readFile(file)
+  readFileWrapper(file)
     .then(data => {
-      writeFile(file, caps(data));
+      writeFileWrapper(file, caps(data));
+    })
+    .then((file) => {
+      let message = {
+        name: 'save',
+        message: `File saved in ${file}!`,
+      };
+
+      emitFileSave(message);
     })
     .catch(() => {
       let error = {
         name: 'error',
         message: 'ERROR: something went wrong',
       };
-      console.log('ERROR');
+
       socket.emit('file-error', JSON.stringify(error));
     });
 };
 
-let readFile = (file) => {
+let readFileWrapper = (file) => {
   return new Promise((resolve, reject) => {
     fs.readFile( file, (err, data) => {
       if(err) { 
@@ -36,21 +44,21 @@ let readFile = (file) => {
 };
 
 let caps = (data) => {
+  console.log(data);
   return data.toUpperCase();
 };
 
-let writeFile = (file, text) => {
+let emitFileSave = (payload) => {
+  socket.emit('file-save', payload);
+};
+
+let writeFileWrapper = (file, text) => {
   return new Promise((resolve, reject) => {
     fs.writeFile( file, Buffer.from(text), (err) => {
       if(err) {
         reject(err); 
       } else {
-        let message = {
-          name: 'save',
-          message: `SAVE: File saved to ${file}`,
-        };
-        console.log('SAVE');
-        socket.emit('file-save', JSON.stringify(message));
+        resolve(file);
       }
     });
   });
@@ -58,3 +66,5 @@ let writeFile = (file, text) => {
 
 let file = process.argv.slice(2).shift();
 alterFile(file);
+
+module.exports = exports = {readFileWrapper, caps, writeFileWrapper};

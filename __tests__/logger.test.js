@@ -1,6 +1,6 @@
 'use strict';
 
-let logger = require('../logger.js');
+let logger = require('../logger/logger.js');
 
 describe('Logger module', () => {
   describe('fileSave', () => {
@@ -9,7 +9,7 @@ describe('Logger module', () => {
       let spy = jest.spyOn(console, 'log');
 
       // act
-        logger.fileSave('message');
+      logger.fileSave('message');
       // assert
 
       expect(spy).toHaveBeenCalled();
@@ -23,7 +23,7 @@ describe('Logger module', () => {
       let spy = jest.spyOn(console, 'error');
 
       // act
-        logger.fileError('message');
+      logger.fileError('message');
       // assert
 
       expect(spy).toHaveBeenCalled();
